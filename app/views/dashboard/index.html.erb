@@ -1,0 +1,18 @@
+<h1>Dashboard</h1>
+<%= form_with(scope: 'database', url: dashboard_connect_to_database_url) do |form| %>
+
+      <%= form.label :host, 'Host:' %>
+      <%= form.text_field :host, class: 'form-control' %>
+
+      <%= form.label :username, 'Username:' %>
+      <%= form.text_field :username, class: 'form-control' %>
+
+      <%= form.label :password, 'Password:' %>
+      <%= form.text_field :password, class: 'form-control' %>
+
+      <%= form.label :database, 'Database:' %>
+      <%= form.text_field :database, class: 'form-control'  %>
+
+      <%= form.submit %>
+<% end %>
+<div id='clearance_5'><%= @connection_status %></div>
