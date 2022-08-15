@@ -13,6 +13,7 @@ class DashboardController < ApplicationController
       Vault.with_retries(Vault::HTTPConnectionError, Vault::HTTPError, attempts: 5) do
         vault_secret = Vault.logical.read(database_params[:secret_path])
       end
+
       @username = vault_secret.data[:username]
       @password = vault_secret.data[:password]
 
@@ -26,7 +27,7 @@ class DashboardController < ApplicationController
       # if the ping fails, the connection will be nil
       # if the ping succeeds, the connection will be a Mysql2::Client object
       @connection_status = if @connection.ping
-                             'Connected to database server'
+                             'Connected to database server as :  ' + @username
                            else
                              'Could not connect to database server'
                            end
