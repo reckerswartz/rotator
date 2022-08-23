@@ -20,4 +20,7 @@ Vault::Rails.configure do |vault|
   # The token to communicate with the Vault server.
   # Default: ENV["VAULT_TOKEN"].
   vault.token = "abcd1234"
+
+  # Optional - if using the Namespace enterprise feature
+  # Vault.namespace   = "my-namespace" # Also reads from ENV["VAULT_NAMESPACE"]
 end
