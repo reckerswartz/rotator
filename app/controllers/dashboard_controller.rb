@@ -3,15 +3,20 @@
 class DashboardController < ApplicationController
   def index
     @connection_status = 'Not connected to database server'
+    @vault_namespace = Vault.namespace if Vault.namespace
   end
 
   def connect_to_database
     @connection_status = 'Could not connect to database server'
     begin
+      vault_read_path = database_params[:secret_path]
+      if Vault.namespace.present?
+        vault_read_path = "#{Vault.namespace}#{vault_read_path}"
+      end
       # get the secret username and password for the database from vault
       vault_secret = []
       Vault.with_retries(Vault::HTTPConnectionError, Vault::HTTPError, attempts: 5) do
-        vault_secret = Vault.logical.read(database_params[:secret_path])
+        vault_secret = Vault.logical.read(vault_read_path)
       end
 
       @username = vault_secret.data[:username]
@@ -44,9 +49,13 @@ class DashboardController < ApplicationController
   def rotate_vault_secret
     @rotate_status = 'Could not rotate secret'
     begin
+      vault_write_path = params[:rotate_secrets][:rotate_path]
+      if Vault.namespace.present?
+        vault_write_path = "#{Vault.namespace}#{vault_write_path}"
+      end
       # rotate the secret in vault
       Vault.with_retries(Vault::HTTPConnectionError, Vault::HTTPError, attempts: 5) do
-        Vault.logical.write(params[:rotate_secrets][:rotate_path])
+        Vault.logical.write(vault_write_path)
       end
       @rotate_status = 'Secret rotated'
     rescue StandardError => e
